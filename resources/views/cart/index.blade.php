@@ -528,7 +528,11 @@
               @foreach ($cartItems as $item)
                 <div class="cart-item">
                   <div class="cart-item-image">
-                    <img src="{{ $item->product->image ?? 'https://via.placeholder.com/120' }}" alt="{{ $item->product->productName }}" />
+                    @if(str_starts_with($item->product->image, 'http'))
+                      <img src="{{ $item->product->image }}" alt="{{ $item->product->productName }}" />
+                    @else
+                      <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->productName }}" />
+                    @endif
                   </div>
 
                   <div class="cart-item-details">

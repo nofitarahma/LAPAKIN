@@ -102,7 +102,11 @@
           <label for="image">Gambar Produk</label>
           @if($product->image)
             <div style="margin-bottom: 12px;">
-              <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->productName }}" style="max-width: 200px; border-radius: 12px;" />
+              @if(str_starts_with($product->image, 'http'))
+                <img src="{{ $product->image }}" alt="{{ $product->productName }}" style="max-width: 200px; border-radius: 12px;" />
+              @else
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->productName }}" style="max-width: 200px; border-radius: 12px;" />
+              @endif
             </div>
           @endif
           <input type="file" id="image" name="image" accept="image/*" />

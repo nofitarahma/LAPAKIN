@@ -61,7 +61,11 @@
         <article class="product-card">
           <div class="product-thumb">
             @if($product->image)
-              <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->productName }}" />
+              @if(str_starts_with($product->image, 'http'))
+                <img src="{{ $product->image }}" alt="{{ $product->productName }}" />
+              @else
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->productName }}" />
+              @endif
             @else
               <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80" alt="{{ $product->productName }}" />
             @endif

@@ -263,7 +263,11 @@
 
         <div class="detail-container">
           <div class="detail-image">
-            <img src="{{ $product->image }}" alt="{{ $product->productName }}" />
+            @if(str_starts_with($product->image, 'http'))
+              <img src="{{ $product->image }}" alt="{{ $product->productName }}" />
+            @else
+              <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->productName }}" />
+            @endif
           </div>
 
           <div class="detail-info">

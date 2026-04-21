@@ -516,7 +516,11 @@
             @forelse($products as $product)
               <article class="product-card">
                 <div class="product-thumb">
-                  <img src="{{ $product->image }}" alt="{{ $product->productName }}" />
+                  @if(str_starts_with($product->image, 'http'))
+                    <img src="{{ $product->image }}" alt="{{ $product->productName }}" />
+                  @else
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->productName }}" />
+                  @endif
                   @if($product->label)
                     <span class="label-chip {{ in_array($product->label, ['Diskon', 'Promo']) ? 'alt-chip' : '' }}">{{ $product->label }}</span>
                   @endif
