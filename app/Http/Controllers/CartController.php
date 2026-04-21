@@ -8,6 +8,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -18,7 +20,7 @@ class CartController extends Controller
 
     public function index(): View
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $cart = $user->cart;
 
         if (!$cart) {
@@ -42,7 +44,7 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
         $product = Product::findOrFail($validated['product_id']);
 
@@ -72,7 +74,7 @@ class CartController extends Controller
     {
         $cartItem = CartItem::findOrFail($cartItemId);
         $cart = $cartItem->cart;
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($cart->user_id !== $user->id) {
             return redirect()->back()->with('error', 'Unauthorized');
