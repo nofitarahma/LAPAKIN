@@ -5,21 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CartController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(): View
     {
         $user = auth()->user();
-        
-        if (!$user instanceof User) {
-            return redirect()->route('login');
-        }
-
         $cart = $user->cart;
 
         if (!$cart) {
@@ -44,11 +43,6 @@ class CartController extends Controller
         ]);
 
         $user = auth()->user();
-        
-        if (!$user instanceof User) {
-            return redirect()->route('login');
-        }
-
         $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
         $product = Product::findOrFail($validated['product_id']);
 
@@ -80,7 +74,7 @@ class CartController extends Controller
         $cart = $cartItem->cart;
         $user = auth()->user();
 
-        if (!$user instanceof User || $cart->user_id !== $user->id) {
+        if ($cart->user_id !== $user->id) {
             return redirect()->back()->with('error', 'Unauthorized');
         }
 

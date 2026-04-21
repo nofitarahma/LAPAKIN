@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\AdminProductController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,4 +21,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::delete('/cart/{cartItemId}', [CartController::class, 'removeItem'])->name('cart.remove');
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('products', AdminProductController::class);
+    });
 });

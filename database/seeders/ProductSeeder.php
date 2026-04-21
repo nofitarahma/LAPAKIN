@@ -19,6 +19,7 @@ class ProductSeeder extends Seeder
                 'category' => 'Elektronik',
                 'location' => 'Jakarta',
                 'rating' => 4.8,
+                'label' => 'Terlaris',
             ],
             [
                 'productName' => 'Kaos Polos Premium',
@@ -39,6 +40,7 @@ class ProductSeeder extends Seeder
                 'category' => 'Elektronik',
                 'location' => 'Surabaya',
                 'rating' => 4.9,
+                'label' => 'Diskon',
             ],
             [
                 'productName' => 'Blender Dapur Mini',
@@ -69,6 +71,7 @@ class ProductSeeder extends Seeder
                 'category' => 'Kecantikan',
                 'location' => 'Bekasi',
                 'rating' => 4.7,
+                'label' => 'Baru',
             ],
             [
                 'productName' => 'Jam Tangan Digital',
@@ -99,6 +102,7 @@ class ProductSeeder extends Seeder
                 'category' => 'Makanan',
                 'location' => 'Aceh',
                 'rating' => 4.8,
+                'label' => 'Promo',
             ],
             [
                 'productName' => 'Tas Selempang Casual',
@@ -169,6 +173,7 @@ class ProductSeeder extends Seeder
                 'category' => 'Makanan',
                 'location' => 'Lampung',
                 'rating' => 4.7,
+                'label' => 'Favorit',
             ],
         ];
 
