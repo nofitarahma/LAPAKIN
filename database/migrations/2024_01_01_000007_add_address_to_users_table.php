@@ -8,9 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->text('address')->nullable()->after('email');
-        });
+        // Kolom address sudah ada di tabel users
     }
 
     public function down(): void
