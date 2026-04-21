@@ -21,7 +21,7 @@ class ProductController extends Controller
         }
 
         $sort = $request->get('sort');
-        match ($sort) {
+        $query = match ($sort) {
             'Harga Terendah'  => $query->orderBy('price', 'asc'),
             'Harga Tertinggi' => $query->orderBy('price', 'desc'),
             'Rating Tertinggi' => $query->orderBy('rating', 'desc'),

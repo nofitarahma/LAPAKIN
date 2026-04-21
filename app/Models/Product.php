@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -16,18 +17,38 @@ class Product extends Model
         'stock',
         'image',
         'category',
-        'rating',
-        'label',
         'location',
+        'rating',
     ];
 
-    public function getProductDetail(): array
+    protected $casts = [
+        'price' => 'decimal:2',
+        'rating' => 'decimal:2',
+    ];
+
+    public function cartItems(): HasMany
     {
-        return $this->toArray();
+        return $this->hasMany(CartItem::class);
     }
 
-    public function updateStock(int $quantity): void
+    public function getProductDetail()
     {
-        $this->decrement('stock', $quantity);
+        return [
+            'id' => $this->id,
+            'productName' => $this->productName,
+            'description' => $this->description,
+            'price' => $this->price,
+            'stock' => $this->stock,
+            'image' => $this->image,
+            'category' => $this->category,
+            'location' => $this->location,
+            'rating' => $this->rating,
+        ];
+    }
+
+    public function updateStock($quantity)
+    {
+        $this->stock -= $quantity;
+        $this->save();
     }
 }

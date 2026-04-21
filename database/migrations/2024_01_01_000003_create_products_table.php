@@ -12,13 +12,12 @@ return new class extends Migration
             $table->id();
             $table->string('productName');
             $table->text('description');
-            $table->double('price');
+            $table->decimal('price', 12, 2);
             $table->integer('stock');
-            $table->string('image');
-            $table->string('category');
-            $table->decimal('rating', 3, 1)->default(0);
-            $table->string('label')->nullable();
+            $table->string('image')->nullable();
+            $table->string('category')->nullable();
             $table->string('location')->nullable();
+            $table->decimal('rating', 3, 2)->default(0);
             $table->timestamps();
         });
     }
