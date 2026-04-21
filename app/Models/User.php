@@ -10,12 +10,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'address'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    public function login($email, $password)
+    {
+        $user = self::where('email', $email)->first();
+        if ($user && password_verify($password, $user->password)) {
+            return $user;
+        }
+        return null;
+    }
 
     /**
      * Get the attributes that should be cast.
