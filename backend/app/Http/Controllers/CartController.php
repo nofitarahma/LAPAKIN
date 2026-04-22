@@ -58,6 +58,32 @@ class CartController extends Controller
         return response()->json(['message' => 'Produk berhasil ditambahkan ke keranjang']);
     }
 
+    public function updateQuantity(Request $request, int $cartItemId): JsonResponse
+    {
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $cartItem = CartItem::findOrFail($cartItemId);
+        $user = Auth::user();
+
+        if ($cartItem->cart->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $product = $cartItem->product;
+        
+        if ($product->stock < $validated['quantity']) {
+            return response()->json(['message' => 'Stok tidak cukup'], 422);
+        }
+
+        $cartItem->quantity = $validated['quantity'];
+        $cartItem->subtotal = $product->price * $validated['quantity'];
+        $cartItem->save();
+
+        return response()->json(['message' => 'Jumlah item berhasil diperbarui']);
+    }
+
     public function removeItem(int $cartItemId): JsonResponse
     {
         $cartItem = CartItem::findOrFail($cartItemId);

@@ -30,8 +30,23 @@
                   <p>{{ item.product.category }}</p>
                   <p class="cart-item-price">{{ formatPrice(item.product.price) }}</p>
                   <p class="cart-item-location">{{ item.product.location }}</p>
+                  <p class="cart-item-stock">Stok: {{ item.product.stock }}</p>
                 </div>
-                <div class="cart-item-quantity">{{ item.quantity }}x</div>
+                <div class="cart-item-quantity">
+                  <div class="quantity-controls">
+                    <button class="qty-btn" @click="updateQuantity(item.id, item.quantity - 1)" :disabled="item.quantity <= 1">-</button>
+                    <input 
+                      type="number" 
+                      v-model.number="item.quantity" 
+                      @change="updateQuantity(item.id, item.quantity)"
+                      min="1" 
+                      :max="item.product.stock"
+                      class="qty-input"
+                    />
+                    <button class="qty-btn" @click="updateQuantity(item.id, item.quantity + 1)" :disabled="item.quantity >= item.product.stock">+</button>
+                  </div>
+                  <p class="item-subtotal">{{ formatPrice(item.subtotal) }}</p>
+                </div>
                 <div class="cart-item-actions">
                   <button class="btn-delete" @click="removeItem(item.id)" title="Hapus item">✕</button>
                 </div>
@@ -114,6 +129,23 @@ async function removeItem(itemId) {
     loadCart()
   } catch (_) {
     showAlert('Gagal menghapus item', 'error')
+  }
+}
+
+async function updateQuantity(itemId, newQuantity) {
+  if (newQuantity < 1) return
+  
+  try {
+    await api.put(`/cart/${itemId}`, { quantity: newQuantity })
+    showAlert('Jumlah item berhasil diperbarui')
+    loadCart()
+  } catch (error) {
+    if (error.response?.status === 422) {
+      showAlert(error.response.data.message || 'Stok tidak cukup', 'error')
+    } else {
+      showAlert('Gagal memperbarui jumlah item', 'error')
+    }
+    loadCart() // Reload untuk reset quantity jika gagal
   }
 }
 

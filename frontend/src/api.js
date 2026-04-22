@@ -26,7 +26,9 @@ async function request(method, path, body = null, isFormData = false) {
       localStorage.removeItem('user')
       if (router) router.push('/login')
     }
-    throw { status: res.status, data }
+    const error = new Error(data.message || 'Request failed')
+    error.response = { status: res.status, data }
+    throw error
   }
   return data
 }

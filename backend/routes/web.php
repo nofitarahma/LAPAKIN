@@ -21,6 +21,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::put('/cart/{cartItemId}', [CartController::class, 'updateQuantity'])->name('cart.update');
     Route::delete('/cart/{cartItemId}', [CartController::class, 'removeItem'])->name('cart.remove');
 
     Route::prefix('admin')->name('admin.')->group(function () {

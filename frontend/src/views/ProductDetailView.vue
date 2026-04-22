@@ -29,7 +29,13 @@
             </div>
             <div class="detail-actions">
               <button class="btn btn-outline">❤ Wishlist</button>
-              <button class="btn btn-primary" @click="addToCart">🛒 Tambah ke Keranjang</button>
+              <button 
+                class="btn btn-primary" 
+                @click="addToCart"
+                :disabled="product.stock < 1"
+              >
+                🛒 {{ product.stock < 1 ? 'Stok Habis' : 'Tambah ke Keranjang' }}
+              </button>
             </div>
             <div class="detail-info-box">
               <strong>Informasi Penting:</strong><br />
@@ -83,11 +89,18 @@ async function addToCart() {
     router.push('/login')
     return
   }
+  
+  if (product.value.stock < 1) {
+    showToast('Stok produk habis', 'error')
+    return
+  }
+  
   try {
     await api.post('/cart/add', { product_id: product.value.id, quantity: 1 })
     showToast('Produk ditambahkan ke keranjang!')
   } catch (err) {
-    showToast(err.data?.message || 'Gagal menambahkan ke keranjang', 'error')
+    const message = err.response?.data?.message || err.message || 'Gagal menambahkan ke keranjang'
+    showToast(message, 'error')
   }
 }
 
