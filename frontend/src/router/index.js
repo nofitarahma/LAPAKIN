@@ -1,0 +1,27 @@
+import { createRouter, createWebHistory } from 'vue-router'
+
+const routes = [
+  { path: '/',               redirect: '/products' },
+  { path: '/login',          component: () => import('../views/LoginView.vue') },
+  { path: '/products',       component: () => import('../views/ProductsView.vue') },
+  { path: '/products/:id',   component: () => import('../views/ProductDetailView.vue') },
+  { path: '/cart',     component: () => import('../views/CartView.vue'),     meta: { requiresAuth: true } },
+  { path: '/checkout', component: () => import('../views/CheckoutView.vue'), meta: { requiresAuth: true } },
+  { path: '/admin/products', component: () => import('../views/admin/AdminProducts.vue'), meta: { requiresAuth: true } },
+  { path: '/admin/products/create', component: () => import('../views/admin/AdminProductForm.vue'), meta: { requiresAuth: true } },
+  { path: '/admin/products/:id/edit', component: () => import('../views/admin/AdminProductForm.vue'), meta: { requiresAuth: true } },
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem('token')
+  if (to.meta.requiresAuth && !token) {
+    return { path: '/login' }
+  }
+})
+
+export default router
