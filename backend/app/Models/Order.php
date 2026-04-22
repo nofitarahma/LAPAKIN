@@ -34,6 +34,16 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
+    public function transferAccount(): BelongsTo
+    {
+        return $this->belongsTo(TransferAccount::class);
+    }
+
+    public function paymentConfirmation()
+    {
+        return $this->hasOne(PaymentConfirmation::class);
+    }
+
     /* ── Business Logic ── */
 
     /**

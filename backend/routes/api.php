@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\PaymentController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -26,6 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Checkout
     Route::get('/checkout', [OrderController::class, 'checkout']);
     Route::post('/checkout', [OrderController::class, 'createOrder']);
+
+    // Payment - Transfer Account
+    Route::get('/payment/transfer/{orderId}', [PaymentController::class, 'getPaymentData']);
+    Route::post('/payment/transfer/{orderId}', [PaymentController::class, 'submitPaymentConfirmation']);
 
     Route::prefix('admin')->group(function () {
         Route::get('/products', [AdminProductController::class, 'index']);

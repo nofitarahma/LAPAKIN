@@ -79,7 +79,7 @@ const loading    = ref(true)
 const alertMsg   = ref('')
 const alertType  = ref('success')
 
-const BASE_IMG = 'http://localhost:8000/storage/'
+const BASE_IMG = 'http://127.0.0.1:8000/storage/'
 function imgSrc(image) {
   if (!image) return 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80'
   return image.startsWith('http') ? image : BASE_IMG + image

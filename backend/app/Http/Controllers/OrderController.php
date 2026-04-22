@@ -71,11 +71,12 @@ class OrderController extends Controller
 
         // Activity diagram: tampilkan nomor pesanan & instruksi pembayaran
         return response()->json([
-            'message'      => 'Pesanan berhasil dibuat',
-            'order_number' => $order->order_number,
-            'total_amount' => $order->total_price,
-            'status'       => $order->status,
-            'items'        => $order->orderDetails->map(fn($d) => [
+            'id'               => $order->id,
+            'message'          => 'Pesanan berhasil dibuat',
+            'order_number'     => $order->order_number,
+            'total_amount'     => $order->total_price,
+            'status'           => $order->status,
+            'items'            => $order->orderDetails->map(fn($d) => [
                 'product_name' => $d->product->productName,
                 'quantity'     => $d->quantity,
                 'price'        => $d->price,

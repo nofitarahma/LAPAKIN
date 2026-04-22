@@ -42,7 +42,8 @@
           </div>
 
           <div class="success-actions">
-            <RouterLink to="/products" class="btn btn-primary">Lanjut Belanja</RouterLink>
+            <button @click="router.push(`/payment/transfer/${orderResult.id}`)" class="btn btn-primary">Lanjut ke Pembayaran Transfer</button>
+            <RouterLink to="/products" class="btn btn-outline">Lanjut Belanja</RouterLink>
           </div>
         </div>
 
@@ -106,9 +107,12 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../api'
 import AppNavbar from '../components/AppNavbar.vue'
 import AppFooter from '../components/AppFooter.vue'
+
+const router = useRouter()
 
 const loading      = ref(true)
 const submitting   = ref(false)
@@ -274,5 +278,6 @@ onMounted(() => loadSummary())
   margin-bottom: 24px;
   text-align: left;
 }
-.success-actions { display: flex; justify-content: center; }
+.success-actions { display: flex; justify-content: center; gap: 12px; }
+.success-actions .btn { flex: 1; max-width: 300px; }
 </style>

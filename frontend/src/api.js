@@ -1,4 +1,9 @@
-const BASE_URL = 'http://localhost:8000/api'
+const BASE_URL = 'http://127.0.0.1:8000/api'
+let router = null
+
+export function setRouter(r) {
+  router = r
+}
 
 function getToken() {
   return localStorage.getItem('token')
@@ -15,7 +20,14 @@ async function request(method, path, body = null, isFormData = false) {
 
   const res = await fetch(BASE_URL + path, options)
   const data = await res.json()
-  if (!res.ok) throw { status: res.status, data }
+  if (!res.ok) {
+    if (res.status === 401 && path !== '/payment/transfer') {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      if (router) router.push('/login')
+    }
+    throw { status: res.status, data }
+  }
   return data
 }
 
