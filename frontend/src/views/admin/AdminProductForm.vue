@@ -11,7 +11,7 @@
         </div>
       </div>
       <nav class="nav-links">
-        <RouterLink to="/admin/products">Kelola Produk</RouterLink>
+        <RouterLink to="/admin/products" class="active">Kelola Produk</RouterLink>
       </nav>
       <div class="nav-actions">
         <button class="logout-btn" @click="handleLogout">Logout</button>
@@ -22,80 +22,82 @@
   <main>
     <section class="catalog-section">
       <div class="container">
+        <div v-if="alertMsg" class="alert" :class="`alert-${alertType}`">{{ alertMsg }}</div>
+
         <div class="section-top">
           <div>
             <span class="section-label">{{ isEdit ? 'EDIT PRODUK' : 'TAMBAH PRODUK' }}</span>
-            <h2>{{ isEdit ? 'Edit Produk' : 'Produk Baru' }}</h2>
+            <h2>{{ isEdit ? 'Edit Produk' : 'Tambah Produk Baru' }}</h2>
           </div>
-          <p>Isi semua informasi produk dengan lengkap dan benar.</p>
+          <p>{{ isEdit ? 'Perbarui informasi produk Anda' : 'Tambahkan produk baru ke katalog' }}</p>
         </div>
 
-        <div v-if="alertMsg" class="alert" :class="`alert-${alertType}`">{{ alertMsg }}</div>
-
-        <div class="form-card">
+        <div class="form-container">
           <form @submit.prevent="handleSubmit">
-            <div class="form-group">
-              <label>Nama Produk *</label>
-              <input v-model="form.productName" type="text" required />
-              <span v-if="errors.productName" class="error-message">{{ errors.productName }}</span>
-            </div>
-
-            <div class="form-group">
-              <label>Deskripsi *</label>
-              <textarea v-model="form.description" required></textarea>
-              <span v-if="errors.description" class="error-message">{{ errors.description }}</span>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="productName">Nama Produk *</label>
+                <input v-model="form.productName" type="text" id="productName" placeholder="Masukkan nama produk" :class="{ 'is-invalid': errors.productName }" required />
+                <span v-if="errors.productName" class="error-message">{{ errors.productName }}</span>
+              </div>
+              <div class="form-group">
+                <label for="category">Kategori *</label>
+                <select v-model="form.category" id="category" :class="{ 'is-invalid': errors.category }" required>
+                  <option value="">Pilih Kategori</option>
+                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
+                <span v-if="errors.category" class="error-message">{{ errors.category }}</span>
+              </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>Harga (Rp) *</label>
-                <input v-model="form.price" type="number" step="0.01" required />
+                <label for="price">Harga (Rp) *</label>
+                <input v-model.number="form.price" type="number" id="price" placeholder="0" min="0" :class="{ 'is-invalid': errors.price }" required />
                 <span v-if="errors.price" class="error-message">{{ errors.price }}</span>
               </div>
               <div class="form-group">
-                <label>Stok *</label>
-                <input v-model="form.stock" type="number" required />
+                <label for="stock">Stok *</label>
+                <input v-model.number="form.stock" type="number" id="stock" placeholder="0" min="0" :class="{ 'is-invalid': errors.stock }" required />
                 <span v-if="errors.stock" class="error-message">{{ errors.stock }}</span>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>Kategori *</label>
-                <select v-model="form.category" required>
-                  <option value="">Pilih Kategori</option>
-                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-                </select>
-                <span v-if="errors.category" class="error-message">{{ errors.category }}</span>
-              </div>
-              <div class="form-group">
-                <label>Lokasi *</label>
-                <input v-model="form.location" type="text" placeholder="Contoh: Jakarta" required />
+                <label for="location">Lokasi *</label>
+                <input v-model="form.location" type="text" id="location" placeholder="Kota/Provinsi" :class="{ 'is-invalid': errors.location }" required />
                 <span v-if="errors.location" class="error-message">{{ errors.location }}</span>
               </div>
-            </div>
-
-            <div class="form-row">
               <div class="form-group">
-                <label>Rating (0-5)</label>
-                <input v-model="form.rating" type="number" step="0.1" min="0" max="5" />
-              </div>
-              <div class="form-group">
-                <label>Label</label>
-                <input v-model="form.label" type="text" placeholder="Contoh: Terlaris" />
+                <label for="rating">Rating (0-5)</label>
+                <input v-model.number="form.rating" type="number" id="rating" placeholder="4.5" min="0" max="5" step="0.1" />
+                <span v-if="errors.rating" class="error-message">{{ errors.rating }}</span>
               </div>
             </div>
 
             <div class="form-group">
-              <label>Gambar Produk</label>
-              <img v-if="imgPreview" :src="imgPreview" class="img-preview" alt="Preview" />
-              <input type="file" accept="image/*" @change="onFileChange" />
+              <label for="description">Deskripsi *</label>
+              <textarea v-model="form.description" id="description" placeholder="Masukkan deskripsi produk" rows="5" :class="{ 'is-invalid': errors.description }" required></textarea>
+              <span v-if="errors.description" class="error-message">{{ errors.description }}</span>
             </div>
 
-            <div class="form-actions-row">
+            <div class="form-group">
+              <label for="image">Gambar Produk</label>
+              <div class="image-upload">
+                <input v-model="form.label" type="text" placeholder="Label (Terlaris, Diskon, Baru, dll)" />
+                <input type="file" id="image" accept="image/*" @change="handleImageChange" />
+              </div>
+              <span v-if="errors.image" class="error-message">{{ errors.image }}</span>
+              <div v-if="imagePreview" class="image-preview">
+                <img :src="imagePreview" :alt="form.productName" />
+              </div>
+            </div>
+
+            <div class="form-actions">
               <RouterLink to="/admin/products" class="btn btn-outline">Batal</RouterLink>
               <button type="submit" class="btn btn-primary" :disabled="loading">
-                {{ loading ? 'Menyimpan...' : (isEdit ? 'Perbarui Produk' : 'Simpan Produk') }}
+                {{ loading ? 'Memproses...' : (isEdit ? 'Perbarui Produk' : 'Tambah Produk') }}
               </button>
             </div>
           </form>
@@ -107,73 +109,117 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { api } from '../../api'
 import { useAuthStore } from '../../stores/auth'
 
-const route  = useRoute()
 const router = useRouter()
-const auth   = useAuthStore()
-
-const isEdit     = computed(() => !!route.params.id)
-const loading    = ref(false)
-const imgPreview = ref(null)
-const imageFile  = ref(null)
-const alertMsg   = ref('')
-const alertType  = ref('success')
-const errors     = reactive({})
-const categories = ['Elektronik', 'Fashion', 'Rumah Tangga', 'Kecantikan', 'Makanan', 'Aksesoris']
-
-const BASE_IMG = 'http://localhost:8000/storage/'
+const route = useRoute()
+const auth = useAuthStore()
 
 const form = reactive({
-  productName: '', description: '', price: '', stock: '',
-  category: '', location: '', rating: '', label: '',
+  productName: '',
+  description: '',
+  price: 0,
+  stock: 0,
+  category: '',
+  location: '',
+  image: null,
+  rating: null,
+  label: '',
 })
 
-function onFileChange(e) {
-  imageFile.value = e.target.files[0]
-  if (imageFile.value) imgPreview.value = URL.createObjectURL(imageFile.value)
+const errors = reactive({
+  productName: '',
+  description: '',
+  price: '',
+  stock: '',
+  category: '',
+  location: '',
+  image: '',
+  rating: '',
+})
+
+const imagePreview = ref(null)
+const loading = ref(false)
+const alertMsg = ref('')
+const alertType = ref('success')
+const categories = ['Elektronik', 'Fashion', 'Rumah Tangga', 'Kecantikan', 'Makanan', 'Aksesoris']
+
+const isEdit = computed(() => !!route.params.id)
+
+function handleImageChange(e) {
+  const file = e.target.files?.[0]
+  if (file) {
+    form.image = file
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      imagePreview.value = event.target?.result
+    }
+    reader.readAsDataURL(file)
+  }
 }
 
 function showAlert(msg, type = 'success') {
-  alertMsg.value  = msg
+  alertMsg.value = msg
   alertType.value = type
+  setTimeout(() => alertMsg.value = '', 3000)
 }
 
 async function handleSubmit() {
-  Object.keys(errors).forEach(k => delete errors[k])
+  Object.keys(errors).forEach(key => errors[key] = '')
   loading.value = true
 
-  const fd = new FormData()
-  Object.entries(form).forEach(([k, v]) => { if (v !== '') fd.append(k, v) })
-  if (imageFile.value) fd.append('image', imageFile.value)
-  if (isEdit.value) fd.append('_method', 'PUT')
-
-  const token = localStorage.getItem('token')
-  const url   = isEdit.value
-    ? `http://localhost:8000/api/admin/products/${route.params.id}`
-    : 'http://localhost:8000/api/admin/products'
-
   try {
-    const res  = await fetch(url, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      body: fd,
-    })
-    const data = await res.json()
+    const formData = new FormData()
+    formData.append('productName', form.productName)
+    formData.append('description', form.description)
+    formData.append('price', form.price)
+    formData.append('stock', form.stock)
+    formData.append('category', form.category)
+    formData.append('location', form.location)
+    if (form.rating) formData.append('rating', form.rating)
+    if (form.label) formData.append('label', form.label)
+    if (form.image) formData.append('image', form.image)
 
-    if (!res.ok) {
-      if (data.errors) Object.assign(errors, Object.fromEntries(Object.entries(data.errors).map(([k, v]) => [k, v[0]])))
-      else showAlert(data.message || 'Terjadi kesalahan', 'error')
-      return
+    if (isEdit.value) {
+      await api.postForm(`/admin/products/${route.params.id}`, formData)
+      showAlert('Produk berhasil diperbarui')
+    } else {
+      await api.postForm('/admin/products', formData)
+      showAlert('Produk berhasil ditambahkan')
     }
 
-    router.push('/admin/products')
-  } catch (_) {
-    showAlert('Gagal menyimpan produk', 'error')
+    setTimeout(() => router.push('/admin/products'), 1500)
+  } catch (err) {
+    if (err.status === 422 && err.data.errors) {
+      Object.keys(err.data.errors).forEach(key => {
+        errors[key] = err.data.errors[key]?.[0] || ''
+      })
+    } else {
+      showAlert(err.data?.message || 'Gagal menyimpan produk', 'error')
+    }
   } finally {
     loading.value = false
+  }
+}
+
+async function loadProduct() {
+  try {
+    const product = await api.get(`/admin/products/${route.params.id}`)
+    form.productName = product.productName
+    form.description = product.description
+    form.price = product.price
+    form.stock = product.stock
+    form.category = product.category
+    form.location = product.location
+    form.rating = product.rating
+    form.label = product.label
+    if (product.image) {
+      imagePreview.value = product.image.startsWith('http') ? product.image : `http://localhost:8000/storage/${product.image}`
+    }
+  } catch (_) {
+    showAlert('Gagal memuat produk', 'error')
   }
 }
 
@@ -182,28 +228,25 @@ async function handleLogout() {
   router.push('/login')
 }
 
-onMounted(async () => {
-  if (isEdit.value) {
-    try {
-      const p = await api.get(`/admin/products/${route.params.id}`)
-      Object.assign(form, {
-        productName: p.productName, description: p.description,
-        price: p.price, stock: p.stock, category: p.category,
-        location: p.location, rating: p.rating ?? '', label: p.label ?? '',
-      })
-      if (p.image) imgPreview.value = p.image.startsWith('http') ? p.image : BASE_IMG + p.image
-    } catch (_) {}
-  }
+onMounted(() => {
+  if (isEdit.value) loadProduct()
 })
 </script>
 
 <style scoped>
-.form-card { background:rgba(255,255,255,0.88); border:1px solid rgba(57,69,8,0.08); border-radius:24px; padding:32px; box-shadow:var(--shadow-md); max-width:800px; margin:0 auto; }
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.form-group textarea { width:100%; min-height:120px; border-radius:14px; background:#f7fbef; border:1px solid rgba(57,69,8,0.10); padding:12px 16px; font-size:14px; color:var(--c1); resize:vertical; font-family:"Manrope",sans-serif; }
-.form-group select { width:100%; height:50px; border-radius:14px; background:#f7fbef; border:1px solid rgba(57,69,8,0.10); padding:0 16px; font-size:14px; color:var(--c1); }
-.img-preview { max-width:200px; border-radius:12px; margin-bottom:12px; display:block; }
-.form-actions-row { display:flex; gap:12px; margin-top:32px; }
-.form-actions-row .btn { flex:1; justify-content:center; }
-.logout-btn { height:46px; padding:0 22px; border-radius:14px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:14px; font-weight:800; cursor:pointer; border:1px solid rgba(220,38,38,0.2); }
+.form-container { background: rgba(255,255,255,0.88); border: 1px solid rgba(57,69,8,0.08); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-md); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 14px; font-weight: 700; color: var(--c1); margin-bottom: 8px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; border-radius: 14px; background: #f7fbef; border: 1px solid rgba(57,69,8,0.10); padding: 12px 16px; font-size: 14px; color: var(--c1); font-family: inherit; transition: 0.25s ease; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { background: #ffffff; border-color: var(--c4); box-shadow: 0 0 0 3px rgba(97,145,17,0.1); }
+.form-group input.is-invalid, .form-group select.is-invalid, .form-group textarea.is-invalid { border-color: var(--error); background: rgba(220,38,38,0.05); }
+.error-message { font-size: 13px; color: var(--error); margin-top: 6px; display: block; }
+.image-upload { display: flex; gap: 12px; }
+.image-upload input[type="text"] { flex: 1; }
+.image-upload input[type="file"] { flex: 1; }
+.image-preview { margin-top: 16px; border-radius: 14px; overflow: hidden; max-width: 200px; }
+.image-preview img { width: 100%; height: auto; }
+.form-actions { display: flex; gap: 12px; margin-top: 32px; }
+.form-actions .btn { flex: 1; }
 </style>

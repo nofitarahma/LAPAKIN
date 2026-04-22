@@ -228,10 +228,22 @@ export default {
     async fetchPaymentData() {
       try {
         const response = await api.get(`/payment/transfer/${this.orderId}`)
-        this.order = response.order
+        console.log('Payment data response:', response)
+        
+        // Ambil data checkout dari localStorage
+        const checkoutData = JSON.parse(localStorage.getItem('checkoutData') || '{}')
+        
+        this.order = {
+          ...response.order,
+          name: checkoutData.name || response.order.name,
+          address: checkoutData.address || response.order.address,
+          phone: checkoutData.phone || response.order.phone,
+        }
         this.transferAccount = response.transfer_account
       } catch (error) {
         console.error('Error fetching payment data:', error)
+        console.error('Error status:', error.status)
+        console.error('Error data:', error.data)
         alert('Gagal memuat data pembayaran. Silakan refresh halaman.')
       }
     },
@@ -255,10 +267,20 @@ export default {
         formData.append('sender_name', this.formData.sender_name)
         formData.append('proof_of_transfer', this.formData.proof_of_transfer)
 
+        console.log('Submitting payment with orderId:', this.orderId)
+        console.log('Form data:', {
+          transfer_date: this.formData.transfer_date,
+          sender_name: this.formData.sender_name,
+          proof_of_transfer: this.formData.proof_of_transfer.name
+        })
+
         const response = await api.postForm(`/payment/transfer/${this.orderId}`, formData)
+        console.log('Payment submission response:', response)
         this.confirmationSuccess = true
       } catch (error) {
         console.error('Error submitting payment:', error)
+        console.error('Error status:', error.status)
+        console.error('Error data:', error.data)
         alert('Gagal mengirim bukti transfer. Silakan coba lagi.')
       } finally {
         this.isSubmitting = false

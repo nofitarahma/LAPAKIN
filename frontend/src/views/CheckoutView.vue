@@ -156,6 +156,13 @@ async function handleCheckout() {
   try {
     const data   = await api.post('/checkout', { ...form })
     orderResult.value = data
+    
+    // Simpan data checkout ke localStorage untuk digunakan di halaman payment
+    localStorage.setItem('checkoutData', JSON.stringify({
+      name: form.name,
+      address: form.address,
+      phone: form.phone,
+    }))
   } catch (err) {
     if (err.status === 422 && err.data.errors) {
       Object.assign(errors, Object.fromEntries(

@@ -12,6 +12,7 @@
       </div>
       <nav class="nav-links">
         <RouterLink to="/admin/products" class="active">Kelola Produk</RouterLink>
+        <RouterLink to="/admin/payments">Konfirmasi Pembayaran</RouterLink>
       </nav>
       <div class="nav-actions">
         <button class="logout-btn" @click="handleLogout">Logout</button>

@@ -82,7 +82,11 @@ async function handleLogin() {
 
   try {
     await auth.login(form.email, form.password)
-    router.push('/products')
+    if (auth.user?.role === 'admin') {
+      router.push('/admin/products')
+    } else {
+      router.push('/products')
+    }
   } catch (err) {
     if (err.status === 422 && err.data.errors) {
       errors.email    = err.data.errors.email?.[0] || ''

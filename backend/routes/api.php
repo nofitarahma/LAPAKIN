@@ -32,12 +32,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment/transfer/{orderId}', [PaymentController::class, 'getPaymentData']);
     Route::post('/payment/transfer/{orderId}', [PaymentController::class, 'submitPaymentConfirmation']);
 
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/products', [AdminProductController::class, 'index']);
         Route::post('/products', [AdminProductController::class, 'store']);
         Route::get('/products/{product}', [AdminProductController::class, 'show']);
         Route::put('/products/{product}', [AdminProductController::class, 'update']);
-        Route::post('/products/{product}', [AdminProductController::class, 'update']); // for _method=PUT via FormData
+        Route::post('/products/{product}', [AdminProductController::class, 'update']);
         Route::delete('/products/{product}', [AdminProductController::class, 'destroy']);
+
+        Route::get('/payments/pending', [PaymentController::class, 'getPendingPayments']);
+        Route::post('/payments/{paymentId}/confirm', [PaymentController::class, 'processConfirmation']);
     });
 });
