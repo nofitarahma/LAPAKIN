@@ -39,8 +39,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/products/{product}', [AdminProductController::class, 'update']);
         Route::post('/products/{product}', [AdminProductController::class, 'update']);
         Route::delete('/products/{product}', [AdminProductController::class, 'destroy']);
-
-        Route::get('/payments/pending', [PaymentController::class, 'getPendingPayments']);
-        Route::post('/payments/{paymentId}/confirm', [PaymentController::class, 'processConfirmation']);
     });
 });

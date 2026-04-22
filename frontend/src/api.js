@@ -21,7 +21,7 @@ async function request(method, path, body = null, isFormData = false) {
   const res = await fetch(BASE_URL + path, options)
   const data = await res.json()
   if (!res.ok) {
-    if (res.status === 401 && path !== '/payment/transfer') {
+    if (res.status === 401 && !path.includes('/payment/transfer')) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       if (router) router.push('/login')

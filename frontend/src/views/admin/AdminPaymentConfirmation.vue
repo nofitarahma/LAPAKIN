@@ -168,7 +168,7 @@ function formatPrice(price) {
 
 function getImageUrl(image) {
   if (!image) return ''
-  return image.startsWith('http') ? image : `http://localhost:8000/storage/${image}`
+  return image.startsWith('http') ? image : `http://127.0.0.1:8000/storage/${image}`
 }
 
 function showAlert(msg, type = 'success') {
@@ -190,8 +190,12 @@ const filtered = computed(() => {
 async function loadPayments() {
   loading.value = true
   try {
-    allPayments.value = await api.get('/admin/payments/pending')
-  } catch (_) {
+    const data = await api.get('/admin/payments/pending')
+    console.log('Payments loaded:', data)
+    allPayments.value = Array.isArray(data) ? data : []
+  } catch (error) {
+    console.error('Error loading payments:', error)
+    showAlert('Gagal memuat pembayaran: ' + (error.data?.message || error.message || 'Unknown error'), 'error')
     allPayments.value = []
   } finally {
     loading.value = false
@@ -219,7 +223,9 @@ async function confirmPayment() {
     await loadPayments()
   } catch (error) {
     console.error('Error confirming payment:', error)
-    showAlert('Gagal memproses pembayaran: ' + (error.message || 'Unknown error'), 'error')
+    console.error('Error data:', error.data)
+    showAlert('Gagal memproses pembayaran: ' + (error.data?.message || error.data?.error || error.message || 'Unknown error'), 'error')
+    showConfirmModal.value = false
   }
 }
 

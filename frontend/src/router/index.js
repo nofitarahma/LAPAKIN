@@ -12,7 +12,6 @@ const routes = [
   { path: '/admin/products', component: () => import('../views/admin/AdminProducts.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/admin/products/create', component: () => import('../views/admin/AdminProductForm.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/admin/products/:id/edit', component: () => import('../views/admin/AdminProductForm.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
-  { path: '/admin/payments', component: () => import('../views/admin/AdminPaymentConfirmation.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
 ]
 
 const router = createRouter({
