@@ -30,22 +30,26 @@
                   <p>{{ item.product.category }}</p>
                   <p class="cart-item-price">{{ formatPrice(item.product.price) }}</p>
                   <p class="cart-item-location">{{ item.product.location }}</p>
-                  <p class="cart-item-stock">Stok: {{ item.product.stock }}</p>
+                  <p class="cart-item-stock" :class="{ 'stock-empty': item.product.stock <= 0, 'stock-low': item.product.stock > 0 && item.product.stock < 10 }">
+                    Stok: {{ item.product.stock <= 0 ? 'Habis' : item.product.stock }}
+                  </p>
                 </div>
                 <div class="cart-item-quantity">
                   <div class="quantity-controls">
-                    <button class="qty-btn" @click="updateQuantity(item.id, item.quantity - 1)" :disabled="item.quantity <= 1">-</button>
+                    <button class="qty-btn" @click="updateQuantity(item.id, item.quantity - 1)" :disabled="item.quantity <= 1 || item.product.stock <= 0">-</button>
                     <input 
                       type="number" 
                       v-model.number="item.quantity" 
                       @change="updateQuantity(item.id, item.quantity)"
                       min="1" 
                       :max="item.product.stock"
+                      :disabled="item.product.stock <= 0"
                       class="qty-input"
                     />
-                    <button class="qty-btn" @click="updateQuantity(item.id, item.quantity + 1)" :disabled="item.quantity >= item.product.stock">+</button>
+                    <button class="qty-btn" @click="updateQuantity(item.id, item.quantity + 1)" :disabled="item.quantity >= item.product.stock || item.product.stock <= 0">+</button>
                   </div>
                   <p class="item-subtotal">{{ formatPrice(item.subtotal) }}</p>
+                  <p v-if="item.product.stock <= 0" class="stock-warning">⚠️ Produk habis stok</p>
                 </div>
                 <div class="cart-item-actions">
                   <button class="btn-delete" @click="removeItem(item.id)" title="Hapus item">✕</button>
@@ -151,3 +155,33 @@ async function updateQuantity(itemId, newQuantity) {
 
 onMounted(() => loadCart())
 </script>
+
+<style scoped>
+.stock-empty {
+  color: #dc2626 !important;
+  font-weight: 600;
+}
+
+.stock-low {
+  color: #f59e0b !important;
+  font-weight: 600;
+}
+
+.stock-warning {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.qty-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.qty-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+}
+</style>

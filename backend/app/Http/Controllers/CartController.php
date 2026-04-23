@@ -36,11 +36,21 @@ class CartController extends Controller
         $cart    = $user->cart ?? Cart::create(['user_id' => $user->id]);
         $product = Product::findOrFail($validated['product_id']);
 
-        if ($product->stock < $validated['quantity']) {
-            return response()->json(['message' => 'Stok tidak cukup'], 422);
+        // Cek stok kosong
+        if ($product->stock <= 0) {
+            return response()->json(['message' => 'Produk ini sedang habis stok'], 422);
         }
 
+        // Cek apakah quantity yang diminta melebihi stok
         $existingItem = $cart->cartItems()->where('product_id', $product->id)->first();
+        $currentQtyInCart = $existingItem ? $existingItem->quantity : 0;
+        $totalRequestedQty = $currentQtyInCart + $validated['quantity'];
+
+        if ($product->stock < $totalRequestedQty) {
+            return response()->json([
+                'message' => "Stok tidak cukup. Stok tersedia: {$product->stock}, sudah di keranjang: {$currentQtyInCart}"
+            ], 422);
+        }
 
         if ($existingItem) {
             $existingItem->quantity += $validated['quantity'];
@@ -73,8 +83,15 @@ class CartController extends Controller
 
         $product = $cartItem->product;
         
+        // Cek stok kosong
+        if ($product->stock <= 0) {
+            return response()->json(['message' => 'Produk ini sedang habis stok'], 422);
+        }
+        
         if ($product->stock < $validated['quantity']) {
-            return response()->json(['message' => 'Stok tidak cukup'], 422);
+            return response()->json([
+                'message' => "Stok tidak cukup. Stok tersedia: {$product->stock}"
+            ], 422);
         }
 
         $cartItem->quantity = $validated['quantity'];

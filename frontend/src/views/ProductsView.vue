@@ -68,7 +68,14 @@
                 </div>
                 <div class="product-buttons">
                   <RouterLink :to="`/products/${p.id}`" class="btn btn-outline">Lihat Detail</RouterLink>
-                  <button class="btn btn-primary" @click="addToCart(p.id)">+ Keranjang</button>
+                  <button 
+                    class="btn" 
+                    :class="p.stock > 0 ? 'btn-primary' : 'btn-disabled'"
+                    :disabled="p.stock <= 0"
+                    @click="addToCart(p.id)"
+                  >
+                    {{ p.stock > 0 ? '+ Keranjang' : 'Stok Habis' }}
+                  </button>
                 </div>
               </div>
             </article>
@@ -152,13 +159,35 @@ async function addToCart(productId) {
     router.push('/login')
     return
   }
+  
+  // Cek stok produk sebelum menambahkan
+  const product = products.value.find(p => p.id === productId)
+  if (product && product.stock <= 0) {
+    showToast('Produk ini sedang habis stok', 'error')
+    return
+  }
+  
   try {
     await api.post('/cart/add', { product_id: productId, quantity: 1 })
     showToast('Produk ditambahkan ke keranjang!')
   } catch (err) {
-    showToast(err.data?.message || 'Gagal menambahkan ke keranjang', 'error')
+    showToast(err.response?.data?.message || 'Gagal menambahkan ke keranjang', 'error')
   }
 }
 
 onMounted(() => loadProducts())
 </script>
+
+<style scoped>
+.btn-disabled {
+  background: rgba(156, 163, 175, 0.3) !important;
+  color: rgba(107, 114, 128, 0.8) !important;
+  border: 1px solid rgba(156, 163, 175, 0.3) !important;
+  cursor: not-allowed !important;
+}
+
+.btn-disabled:hover {
+  background: rgba(156, 163, 175, 0.3) !important;
+  transform: none !important;
+}
+</style>

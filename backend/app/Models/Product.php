@@ -44,6 +44,8 @@ class Product extends Model
             'category' => $this->category,
             'location' => $this->location,
             'rating' => $this->rating,
+            'isOutOfStock' => $this->stock <= 0,
+            'isLowStock' => $this->stock > 0 && $this->stock < 10,
         ];
     }
 

@@ -25,16 +25,19 @@
             <p class="detail-description">{{ product.description }}</p>
             <div class="detail-stock">
               <strong>Stok Tersedia:</strong>
-              <span>{{ product.stock }} unit</span>
+              <span :class="{ 'stock-empty': product.stock <= 0, 'stock-low': product.stock > 0 && product.stock < 10 }">
+                {{ product.stock <= 0 ? 'Habis' : `${product.stock} unit` }}
+              </span>
             </div>
             <div class="detail-actions">
               <button class="btn btn-outline">❤ Wishlist</button>
               <button 
-                class="btn btn-primary" 
+                class="btn" 
+                :class="product.stock > 0 ? 'btn-primary' : 'btn-disabled'"
                 @click="addToCart"
-                :disabled="product.stock < 1"
+                :disabled="product.stock <= 0"
               >
-                🛒 {{ product.stock < 1 ? 'Stok Habis' : 'Tambah ke Keranjang' }}
+                🛒 {{ product.stock <= 0 ? 'Stok Habis' : 'Tambah ke Keranjang' }}
               </button>
             </div>
             <div class="detail-info-box">
@@ -90,8 +93,8 @@ async function addToCart() {
     return
   }
   
-  if (product.value.stock < 1) {
-    showToast('Stok produk habis', 'error')
+  if (product.value.stock <= 0) {
+    showToast('Produk ini sedang habis stok', 'error')
     return
   }
   
@@ -114,3 +117,27 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.btn-disabled {
+  background: rgba(156, 163, 175, 0.3) !important;
+  color: rgba(107, 114, 128, 0.8) !important;
+  border: 1px solid rgba(156, 163, 175, 0.3) !important;
+  cursor: not-allowed !important;
+}
+
+.btn-disabled:hover {
+  background: rgba(156, 163, 175, 0.3) !important;
+  transform: none !important;
+}
+
+.stock-empty {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.stock-low {
+  color: #f59e0b;
+  font-weight: 600;
+}
+</style>
